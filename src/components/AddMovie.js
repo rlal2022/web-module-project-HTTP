@@ -1,15 +1,9 @@
-import React, { useState, useEffect } from "react";
-import { useParams, useHistory } from "react-router-dom";
+import React, { useState } from "react";
+import { useHistory } from "react-router-dom";
 import { Link } from "react-router-dom";
-
 import axios from "axios";
 
-const EditMovieForm = (props) => {
-  const { push } = useHistory();
-
-  const { id } = useParams();
-
-  const { setMovies } = props;
+const AddMovie = (props) => {
   const [movie, setMovie] = useState({
     title: "",
     director: "",
@@ -18,6 +12,8 @@ const EditMovieForm = (props) => {
     description: "",
   });
 
+  let push = useHistory();
+
   const handleChange = (e) => {
     setMovie({
       ...movie,
@@ -25,23 +21,13 @@ const EditMovieForm = (props) => {
     });
   };
 
-  useEffect(() => {
-    axios
-      .get(`http://localhost:9000/api/movies/${id}`)
-      .then((res) => {
-        // console.log(res);
-        setMovie(res.data);
-      })
-      .catch((err) => console.log(err));
-  }, []);
-
   const handleSubmit = (e) => {
     e.preventDefault();
     axios
-      .put(`http://localhost:9000/api/movies/${id}`, movie)
+      .post(`http://localhost:9000/api/movies/`, movie)
       .then((res) => {
-        setMovies(res.data);
-        push(`/movies/${movie.id}`);
+        props.setMovies(res.data);
+        push("/movies/");
       })
       .catch((err) => {
         console.log(err);
@@ -56,7 +42,7 @@ const EditMovieForm = (props) => {
         <form onSubmit={handleSubmit}>
           <div className="modal-header">
             <h4 className="modal-title">
-              Editing <strong>{movie.title}</strong>
+              Adding Movie <strong>{movie.title}</strong>
             </h4>
           </div>
           <div className="modal-body">
@@ -111,8 +97,8 @@ const EditMovieForm = (props) => {
             </div>
           </div>
           <div className="modal-footer">
-            <input type="submit" className="btn btn-info" value="Save" />
-            <Link to={`/movies/1`}>
+            <input type="submit" className="btn btn-success" value="Add" />
+            <Link to={`/movies/`}>
               <input type="button" className="btn btn-default" value="Cancel" />
             </Link>
           </div>
@@ -122,4 +108,4 @@ const EditMovieForm = (props) => {
   );
 };
 
-export default EditMovieForm;
+export default AddMovie;
